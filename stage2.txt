@@ -1,0 +1,14 @@
+Add a rule-based competition assessment to the app.
+
+After a successful search, calculate and display above the results table:
+- the total number of matching venues found within the 1km radius (all of them, not just the 5 shown)
+- the distance in metres to the closest matching venue
+- a competition level based on this rule:
+  0-1 venues  -> "Lower observed direct competition"
+  2-4 venues  -> "Moderate observed direct competition"
+  5 or more   -> "Higher observed direct competition"
+- if the closest venue is under 250 metres, add a separate note that a direct competitor is very nearby
+
+Write it as a plain function that takes the count and the closest distance and returns the assessment text. Do not use an LLM for this. Keep it transparent and readable.
+
+Also display the entered address, the selected category and the radius above the results.

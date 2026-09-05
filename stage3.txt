@@ -1,0 +1,19 @@
+Add Quarto PDF report generation to the app.
+
+Approach:
+- Add a "Generate PDF report" button that appears after a successful search.
+- When clicked, write the current analysis data to report_data.json in the project folder, then run "quarto render report.qmd" using subprocess, then send the resulting PDF to the browser as a download.
+- Create report.qmd. It must read report_data.json (do not use Quarto params) and render the report from that data.
+
+The report must contain:
+- the entered address, the selected category and the search radius
+- a clearly formatted table of the closest establishments (up to 5)
+- the total number of matching venues found within 1km
+- the distance to the closest matching venue
+- the rule-based competition assessment, reusing the exact same function the web app uses so the wording cannot drift
+- a short limitations statement explaining that OpenStreetMap metadata can be incomplete or out of date and that results must be validated with local field research before any real business decision
+
+Important:
+- Use "format: typst" in the qmd header, NOT "format: pdf". The pdf format needs a LaTeX install and I do not have one.
+- Show the actual error output in the browser if quarto render fails, do not fail silently.
+- Check that report_data.json is written before running quarto.

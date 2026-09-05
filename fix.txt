@@ -1,0 +1,13 @@
+Running the app gives this error at app.py line 44:
+requests.exceptions.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+in query_overpass, at: return resp.json().get("elements", [])
+
+The Overpass API is not returning JSON. Fix it properly:
+- Check resp.status_code before parsing. If it is not 200, do not call .json().
+- Wrap the .json() call in a try/except and handle a non-JSON body.
+- Add a 30 second timeout to the Overpass request.
+- Add a User-Agent header to the Overpass request too.
+- If Overpass fails, show a clear message in the web page telling the user the venue lookup failed and to try again, instead of crashing with a stack trace.
+- Print the response status code and the first 200 characters of the body to the console when it fails, so I can see what actually came back.
+
+Do not add retries or caching yet. Keep the fix minimal.

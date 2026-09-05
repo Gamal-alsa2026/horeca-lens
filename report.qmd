@@ -1,0 +1,59 @@
+---
+title: "HORECA Competition Report"
+format: typst
+execute:
+  echo: false
+  warning: false
+---
+
+```{python}
+#| output: asis
+import json
+
+with open("report_data.json", encoding="utf-8") as f:
+    data = json.load(f)
+
+print(f"**Address:** {data['address']}\n")
+print(f"**Category:** {data['category']}\n")
+print(f"**Search radius:** {data['radius']} m\n")
+print(f"**Total venues found within {data['radius']} m:** {data['total_count']}\n")
+
+closest = data.get("closest_distance")
+if closest is not None:
+    print(f"**Closest matching venue:** {closest} m\n")
+else:
+    print("**Closest matching venue:** none found\n")
+```
+
+## Competition assessment
+
+```{python}
+#| output: asis
+competition = data.get("competition") or {}
+print(f"**{competition.get('level', 'N/A')}**\n")
+
+nearby_note = competition.get("nearby_note")
+if nearby_note:
+    print(f"\n{nearby_note}\n")
+```
+
+## Closest establishments
+
+```{python}
+#| output: asis
+results = data.get("results") or []
+
+if results:
+    print("| Name | Type | Website | Distance (m) |")
+    print("|---|---|---|---|")
+    for v in results:
+        website = v.get("website") or "—"
+        print(f"| {v['name']} | {v['type']} | {website} | {v['distance']} |")
+else:
+    print("No venues found within the search radius.\n")
+```
+
+## Limitations
+
+OpenStreetMap metadata can be incomplete or out of date. These results must
+be validated with local field research before any real business decision.

@@ -1,0 +1,10 @@
+The Overpass API is returning HTTP 429 (rate limited) and 504 (gateway timeout) intermittently. The error handling works, but the app fails too often to be usable.
+
+Make the Overpass call resilient:
+- Retry up to 3 times when the status is 429, 502, 503 or 504. Wait 2 seconds before the first retry, then 4, then 8.
+- Try a second Overpass mirror if the first one keeps failing. Use https://overpass-api.de/api/interpreter as primary and https://overpass.kumi.systems/api/interpreter as fallback.
+- Cache successful results in memory keyed by (lat, lon, category) so repeated testing of the same search does not hit the API again.
+- If every attempt fails, keep the existing clear error message on the page.
+- Keep printing the status code to the console so I can still see what happened.
+
+Keep the code simple and readable.

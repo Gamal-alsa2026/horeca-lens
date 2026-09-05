@@ -1,0 +1,17 @@
+Build a local Flask app in this folder for a HORECA competition analysis tool.
+
+Requirements:
+- A single page with a form: an address text input and a dropdown to pick one category (cafe, restaurant, or hotel).
+- On submit: geocode the address with OpenStreetMap Nominatim, then query Overpass API for matching venues within a 1km radius.
+- Tag mapping: cafe -> amenity=cafe, restaurant -> amenity=restaurant, hotel -> tourism=hotel.
+- Use nwr in the Overpass query with "out center;" so ways and relations also return coordinates.
+- Calculate straight-line distance with the haversine formula, written directly in the code (no extra library).
+- Show the 5 closest results in a table: name, type, website if available, and distance in metres.
+- If fewer than 5 are found, show all of them and display a clear message that fewer than 5 were found.
+
+Important:
+- Set a custom User-Agent header on the Nominatim request, it rejects requests without one.
+- Keep it simple and readable. No database, no deployment config, no tests.
+- Create a requirements.txt.
+
+Explain briefly what each file does when you're done.

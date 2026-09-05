@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HORECA Competition Analyser</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            max-width: 860px;
+            margin: 40px auto;
+            padding: 0 20px;
+            color: #222;
+        }
+        h1 { margin-bottom: 24px; }
+        form { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+        input[type="text"] {
+            flex: 1;
+            min-width: 240px;
+            padding: 9px 12px;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        select {
+            padding: 9px 12px;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 9px 20px;
+            font-size: 1rem;
+            background: #0066cc;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover { background: #0052a3; }
+        .error   { color: #cc0000; margin-top: 16px; }
+        .warning { color: #996600; margin-top: 16px; font-style: italic; }
+        .none    { margin-top: 16px; color: #555; }
+        .summary {
+            margin-top: 20px;
+            padding: 14px 18px;
+            background: #f5f5f5;
+            border-radius: 4px;
+        }
+        .summary p { margin: 4px 0; }
+        .summary .level { font-weight: 600; }
+        .summary .nearby { color: #cc0000; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px 14px;
+            text-align: left;
+        }
+        th { background: #f5f5f5; font-weight: 600; }
+        tr:nth-child(even) { background: #fafafa; }
+        a { color: #0066cc; }
+    </style>
+</head>
+<body>
+    <h1>HORECA Competition Analyser</h1>
+
+    <form method="POST">
+        <input type="text" name="address" placeholder="Enter an address…" value="{{ address }}" required>
+        <select name="category">
+            <option value="cafe"       {% if category == 'cafe'       %}selected{% endif %}>Cafe</option>
+            <option value="restaurant" {% if category == 'restaurant' %}selected{% endif %}>Restaurant</option>
+            <option value="hotel"      {% if category == 'hotel'      %}selected{% endif %}>Hotel</option>
+        </select>
+        <button type="submit">Search</button>
+    </form>
+
+    {% if error %}
+        <p class="error">{{ error }}</p>
+    {% endif %}
+
+    {% if results is not none %}
+        <div class="summary">
+            <p><strong>Address:</strong> {{ address }}</p>
+            <p><strong>Category:</strong> {{ category }}</p>
+            <p><strong>Radius:</strong> {{ radius }}&nbsp;m</p>
+            <p><strong>Venues found:</strong> {{ total_count }}</p>
+            <p><strong>Closest venue:</strong>
+                {% if closest_distance is not none %}
+                    {{ closest_distance }}&nbsp;m
+                {% else %}
+                    &mdash;
+                {% endif %}
+            </p>
+            <p class="level">{{ competition.level }}</p>
+            {% if competition.nearby_note %}
+                <p class="nearby">{{ competition.nearby_note }}</p>
+            {% endif %}
+        </div>
+
+        {% if fewer_than_5 %}
+            <p class="warning">
+                Fewer than 5 results found within 1&nbsp;km &mdash; showing all {{ results | length }} found.
+            </p>
+        {% endif %}
+
+        {% if results %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Type</th>
+                        <th>Website</th>
+                        <th>Distance (m)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for v in results %}
+                    <tr>
+                        <td>{{ v.name }}</td>
+                        <td>{{ v.type }}</td>
+                        <td>
+                            {% if v.website %}
+                                <a href="{{ v.website }}" target="_blank" rel="noopener">{{ v.website }}</a>
+                            {% else %}
+                                &mdash;
+                            {% endif %}
+                        </td>
+                        <td>{{ v.distance }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="none">No venues found within 1&nbsp;km.</p>
+        {% endif %}
+
+        <form method="POST" action="/report" style="margin-top: 20px;">
+            <input type="hidden" name="report_data" value='{{ report_payload | tojson }}'>
+            <button type="submit">Generate PDF report</button>
+        </form>
+    {% endif %}
+</body>
+</html>
